@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project TransactionHelper">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="${dir.buildfile}/.."/>
+    <property name="dir.jarfile" value="/home/jeff/Desktop/unity_bootstrap"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/Tools.jar">
+            <fileset dir="${dir.buildfile}/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/ed25519.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/modRlp.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/modUtil.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/org-aion-avm-api.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/lib/org-aion-avm-userlib.jar"/>
+        </jar>
+    </target>
+</project>
