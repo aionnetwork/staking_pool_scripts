@@ -26,7 +26,7 @@ public class PackageJarAsHex {
         byte[] packaged = new CodeAndArguments(jarBytes, new byte[0]).encodeToBytes();
         
         // Render this as a hex string and print it.
-        String hexStringOfSignedTransaction = Utils.bytesToHex(packaged);
+        String hexStringOfSignedTransaction = "0x" + Utils.bytesToHex(packaged);
         System.out.println(hexStringOfSignedTransaction);
     }
 }

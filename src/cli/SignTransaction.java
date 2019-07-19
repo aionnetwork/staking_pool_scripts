@@ -43,7 +43,7 @@ public class SignTransaction {
         byte[] signedTransaction = transactionBuilder.buildSignedTransaction();
         
         // Render this as a hex string and print it.
-        String hexStringOfSignedTransaction = Utils.bytesToHex(signedTransaction);
+        String hexStringOfSignedTransaction = "0x" + Utils.bytesToHex(signedTransaction);
         System.out.println(hexStringOfSignedTransaction);
     }
 
@@ -53,8 +53,17 @@ public class SignTransaction {
         for (int i = 0; i < args.length; ++i) {
             String arg = args[i];
             if (name.equals(arg)) {
-                // Grab the next argument as hex.
-                value = Utils.hexToBytes(args[i + 1]);
+                // Grab the next argument.
+                String nextArg = args[i + 1];
+                
+                // We interpret it as hex-encoded binary if it has a 0x prefix or a BigInteger we should return as big-endian bytes, if not.
+                if (nextArg.startsWith("0x")) {
+                    // Hex, so strip this prefix and use the crypt util to get the bytes.
+                    value = Utils.hexToBytes(nextArg.substring(2));
+                } else {
+                    // Interpret this as a BigInteger.
+                    value = new BigInteger(nextArg).toByteArray();
+                }
             }
         }
         if (required && (null == value)) {
