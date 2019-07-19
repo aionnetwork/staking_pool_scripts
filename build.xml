@@ -5,7 +5,7 @@
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
     <property name="dir.workspace" value="${dir.buildfile}/.."/>
-    <property name="dir.jarfile" value="/home/jeff/Desktop/unity_bootstrap"/>
+    <property name="dir.jarfile" value="."/>
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/Tools.jar">
             <fileset dir="${dir.buildfile}/bin"/>

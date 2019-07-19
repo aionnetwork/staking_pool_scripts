@@ -38,10 +38,6 @@ function receipt_data() {
 	echo $header$quote$receipt$footer
 }
 
-function send_raw() {
-	echo '{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":[{"data": "'$1'"}]}'
-}
-
 function result_is_true() {
 	if [[ "$1" =~ (\"result\":true) ]];
 	then
@@ -97,7 +93,8 @@ fi
 
 function send_raw_and_print_receipt() {
 	# send the transaction.
-	response=$(curl -s -X POST --data "$1" http://$host:$port)
+	payload='{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":["'$1'"],"id":1}'
+	response=$(curl -s -X POST --data "$payload" http://$host:$port)
 	if [ $? -eq 7 ]
 	then
 		bad_connection_msg
@@ -198,27 +195,28 @@ then
 
 elif [ "$1" = '--call' ]
 then
-	# Call has 5 arguments:
+	# Call has 6 arguments:
 	private_key="$2"
 	nonce="$3"
 	target_address="$4"
 	serialized_call="$5"
+	value="$6"
 	
-	if [ $# -lt 5 ]
+	if [ $# -eq 6 ]
 	then
+		# Package the entire transaction.
+		signed_call="$(java -cp $TOOLS_JAR cli.SignTransaction --privateKey "$private_key" --nonce "$nonce" --destination "$target_address" --call "$serialized_call" --value "$value")"
+		if [ $? -ne 0 ]
+		then
+			exit 1
+		fi
+
+		send_raw_and_print_receipt "$signed_call"
+	else
 		echo 'Incorrect number of arguments given!'
 		print_help
 		exit 1
 	fi
-
-	# Package the entire transaction.
-	signed_call="$(java -cp $TOOLS_JAR cli.SignTransaction --privateKey "$private_key" --nonce "$nonce" --destination "$target_address" --call "$serialized_call")"
-	if [ $? -ne 0 ]
-	then
-		exit 1
-	fi
-
-	send_raw_and_print_receipt "$signed_call"
 
 else
 	print_help

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PRIVATE_KEY="c42a922ebeab78795fac58081b9cf9d4069346ca77152d3e42b1630826feef36"
+PRIVATE_KEY="cc76648ce8798bc18130bc9d637995e5c42a922ebeab78795fac58081b9cf9d4"
 JAR_PATH="registry.jar"
 
 function require_success()
@@ -59,14 +59,8 @@ do
 done
 echo "Deployed to address: \"$address\""
 
-exit 1
-
-echo "Verifying initial program state..."
-verify_state "$address" '{"result":"0x0102","id":1,"jsonrpc":"2.0"}'
-echo "Initital state good"
-
-echo "Sending first transaction..."
-receipt=`./rpc.sh --call "$password" a0d6dec327f522f9c8d342921148a6c42f40a3ce45c1f56baa7bfa752200d9e5 "$address" a`
+echo "Sending registration call..."
+receipt=`./rpc.sh --call "$PRIVATE_KEY" "01" "a056337bb14e818f3f53e13ab0d93b6539aa570cba91ce65c716058241989be9" "210008726567697374657222a02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b" "00"`
 echo "$receipt"
 require_success $?
 
@@ -74,12 +68,8 @@ echo "Transaction returned receipt: \"$receipt\".  Waiting for transaction to co
 wait_for_receipt "$receipt"
 echo "Transaction completed"
 
-echo "Verify state after first transaction..."
-verify_state "$address" '{"result":"0x21000161","id":1,"jsonrpc":"2.0"}'
-echo "State good"
-
-echo "Sending second transaction..."
-receipt=`./rpc.sh --call "$password" 0xa0d6dec327f522f9c8d342921148a6c42f40a3ce45c1f56baa7bfa752200d9e5 "$address" ASDF`
+echo "Sending voting call"
+receipt=`./rpc.sh --call "$PRIVATE_KEY" "02" "a056337bb14e818f3f53e13ab0d93b6539aa570cba91ce65c716058241989be9" "210004766f746522a02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b" "100000000000"`
 echo "$receipt"
 require_success $?
 
@@ -87,7 +77,4 @@ echo "Transaction returned receipt: \"$receipt\".  Waiting for transaction to co
 wait_for_receipt "$receipt"
 echo "Transaction completed"
 
-echo "Verify state after second transaction..."
-verify_state "$address" '{"result":"0x21000441534446","id":1,"jsonrpc":"2.0"}'
-echo "Final state good.  Test complete!"
-
+echo "BOOTSTRAP COMPLETE"

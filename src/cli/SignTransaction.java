@@ -26,7 +26,10 @@ public class SignTransaction {
                 .energyLimit((null != dataToDeploy) ? ENERGY_LIMIT_DEPLOY : ENERGY_LIMIT_CALL)
                 .energyPrice(ENERGY_PRICE);
         if (null != dataToDeploy) {
-            transactionBuilder = transactionBuilder.data(dataToDeploy);
+            transactionBuilder = transactionBuilder
+                    .data(dataToDeploy)
+                    .useAvmTransactionType()
+                    ;
         } else if (null != dataToCall) {
             transactionBuilder = transactionBuilder
                     .destination(destinationAddress)
@@ -52,7 +55,6 @@ public class SignTransaction {
             if (name.equals(arg)) {
                 // Grab the next argument as hex.
                 value = Utils.hexToBytes(args[i + 1]);
-                System.out.println("LENGTH: " + args[i+1].length());
             }
         }
         if (required && (null == value)) {
