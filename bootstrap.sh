@@ -20,7 +20,7 @@ function verify_state()
 	expected="$3"
 
 	payload={"jsonrpc":"2.0","method":"eth_call","params":[{"to":"$address","data":"$data"}],"id":1}
-	response=`curl -s -X POST --data "$payload" 127.0.0.1:8545`
+	response=`curl -s -X POST -H "Content-Type: application/json" --data "$payload" 127.0.0.1:8545`
 	if [ "$expected" != "$response" ]
 	then
 		echo "Incorrect response from eth_call: \"$response\""

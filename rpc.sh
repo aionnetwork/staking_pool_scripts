@@ -31,11 +31,10 @@ function print_help() {
 }
 
 function receipt_data() {
-	header='{"jsonrpc":"2.0","method":"eth_getTransactionReceipt","params":['
-	quote="'"
+	header='{"jsonrpc":"2.0","id":1,"method":"eth_getTransactionReceipt","params":["'
 	receipt="$1"
-	footer="']}"
-	echo $header$quote$receipt$footer
+	footer='"]}'
+	echo $header$receipt$footer
 }
 
 function result_is_true() {
@@ -94,7 +93,7 @@ fi
 function send_raw_and_print_receipt() {
 	# send the transaction.
 	payload='{"jsonrpc":"2.0","method":"eth_sendRawTransaction","params":["'$1'"],"id":1}'
-	response=$(curl -s -X POST --data "$payload" http://$host:$port)
+	response=$(curl -s -X POST -H "Content-Type: application/json" --data "$payload" http://$host:$port)
 	if [ $? -eq 7 ]
 	then
 		bad_connection_msg
@@ -116,7 +115,7 @@ then
 	fi
 
 	# query the transaction receipt.
-	response=$(curl -s -X POST --data "$(receipt_data "$2")" http://$host:$port)
+	response=$(curl -s -X POST -H "Content-Type: application/json" --data "$(receipt_data "$2")" http://$host:$port)
 	if [ $? -eq 7 ]
 	then
 		bad_connection_msg
@@ -143,7 +142,7 @@ then
 	fi
 
 	# query the transaction receipt.
-	response=$(curl -s -X POST --data "$(receipt_data "$2")" http://$host:$port)
+	response=$(curl -s -X POST -H "Content-Type: application/json" --data "$(receipt_data "$2")" http://$host:$port)
 	if [ $? -eq 7 ]
 	then
 		bad_connection_msg
