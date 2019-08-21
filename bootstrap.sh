@@ -1,8 +1,10 @@
 #!/bin/bash
 
+STAKER_ADDRESS="0xa02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b"
 PRIVATE_KEY="0xcc76648ce8798bc18130bc9d637995e5c42a922ebeab78795fac58081b9cf9d4"
 EXPECTED_DAPP_ADDRESS="0xa056337bb14e818f3f53e13ab0d93b6539aa570cba91ce65c716058241989be9"
 JAR_PATH="registry.jar"
+TOOLS_JAR=Tools.jar
 
 function require_success()
 {
@@ -64,11 +66,13 @@ echo "Deployed to address: \"$address\""
 if [ "$EXPECTED_DAPP_ADDRESS" != "$address" ]
 then
 	echo "Address was incorrect:  Expected $EXPECTED_DAPP_ADDRESS"
-	exirt 1
+	exit 1
 fi
 
 echo "Sending registration call..."
-receipt=`./rpc.sh --call "$PRIVATE_KEY" "01" "$address" "0x210008726567697374657222a02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b" "0"`
+# registerStaker(Address identityAddress, Address managementAddress, Address signingAddress, Address coinbaseAddress, Address selfBondAddress)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerStaker" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS")"
+receipt=`./rpc.sh --call "$PRIVATE_KEY" "1" "$address" "$callPayload" "0"`
 echo "$receipt"
 require_success $?
 
@@ -77,7 +81,9 @@ wait_for_receipt "$receipt"
 echo "Transaction completed"
 
 echo "Sending voting call"
-receipt=`./rpc.sh --call "$PRIVATE_KEY" "2" "$address" "0x210004766f746522a02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b" "1000000000"`
+# vote(Address staker)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "vote" "$STAKER_ADDRESS")"
+receipt=`./rpc.sh --call "$PRIVATE_KEY" "2" "$address" "$callPayload" "1000000000"`
 echo "$receipt"
 require_success $?
 
@@ -86,6 +92,8 @@ wait_for_receipt "$receipt"
 echo "Transaction completed"
 
 echo "Verifying that vote was registered..."
-verify_state "$address" "0x210007676574566f746522a02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b" '{"result":"0x06000000003b9aca00","id":1,"jsonrpc":"2.0"}'
+# getTotalStake(Address staker)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getTotalStake" "$STAKER_ADDRESS")"
+verify_state "$address" "$callPayload" '{"result":"0x06000000003b9aca00","id":1,"jsonrpc":"2.0"}'
 
 echo "BOOTSTRAP COMPLETE"
