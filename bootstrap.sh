@@ -70,8 +70,8 @@ then
 fi
 
 echo "Sending registration call..."
-# registerStaker(Address identityAddress, Address managementAddress, Address signingAddress, Address coinbaseAddress, Address selfBondAddress)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerStaker" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS")"
+# registerStaker(Address identityAddress, Address managementAddress, Address signingAddress, Address coinbaseAddress)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerStaker" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS")"
 receipt=`./rpc.sh --call "$PRIVATE_KEY" "1" "$address" "$callPayload" "0"`
 echo "$receipt"
 require_success $?
@@ -80,10 +80,10 @@ echo "Transaction returned receipt: \"$receipt\".  Waiting for transaction to co
 wait_for_receipt "$receipt"
 echo "Transaction completed"
 
-echo "Sending delegate call"
-# delegate(Address staker)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "delegate" "$STAKER_ADDRESS")"
-receipt=`./rpc.sh --call "$PRIVATE_KEY" "2" "$address" "$callPayload" "1000000000"`
+echo "Sending bond call"
+# bond(Address staker)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "bond" "$STAKER_ADDRESS")"
+receipt=`./rpc.sh --call "$PRIVATE_KEY" "2" "$address" "$callPayload" "100000000000000000000000"`
 echo "$receipt"
 require_success $?
 
@@ -91,10 +91,14 @@ echo "Transaction returned receipt: \"$receipt\".  Waiting for transaction to co
 wait_for_receipt "$receipt"
 echo "Transaction completed"
 
-echo "Verifying that vote was registered..."
+echo "Verifying that vote was registered and staker is active..."
 # getTotalStake(Address staker)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getTotalStake" "$STAKER_ADDRESS")"
 # This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
-verify_state "$address" "$callPayload" '{"result":"0x23043b9aca00","id":1,"jsonrpc":"2.0"}'
+verify_state "$address" "$callPayload" '{"result":"0x230a152d02c7e14af6800000","id":1,"jsonrpc":"2.0"}'
+
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getEffectiveStake" "$STAKER_ADDRESS" "$STAKER_ADDRESS")"
+# This result in the same BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
+verify_state "$address" "$callPayload" '{"result":"0x230a152d02c7e14af6800000","id":1,"jsonrpc":"2.0"}'
 
 echo "BOOTSTRAP COMPLETE"
