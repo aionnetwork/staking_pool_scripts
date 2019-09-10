@@ -80,9 +80,9 @@ echo "Transaction returned receipt: \"$receipt\".  Waiting for transaction to co
 wait_for_receipt "$receipt"
 echo "Transaction completed"
 
-echo "Sending voting call"
-# vote(Address staker)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "vote" "$STAKER_ADDRESS")"
+echo "Sending delegate call"
+# delegate(Address staker)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "delegate" "$STAKER_ADDRESS")"
 receipt=`./rpc.sh --call "$PRIVATE_KEY" "2" "$address" "$callPayload" "1000000000"`
 echo "$receipt"
 require_success $?
@@ -94,6 +94,7 @@ echo "Transaction completed"
 echo "Verifying that vote was registered..."
 # getTotalStake(Address staker)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getTotalStake" "$STAKER_ADDRESS")"
-verify_state "$address" "$callPayload" '{"result":"0x06000000003b9aca00","id":1,"jsonrpc":"2.0"}'
+# This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
+verify_state "$address" "$callPayload" '{"result":"0x23043b9aca00","id":1,"jsonrpc":"2.0"}'
 
 echo "BOOTSTRAP COMPLETE"
