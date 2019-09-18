@@ -15,6 +15,7 @@ Description of relevant components:
 5)  `bootstrap.sh` - the top-level script which takes no arguments and will synchronously perform all operations required to bootstrap PoS block production on a running PoW Unity cluster.
 6)  `deploy.sh` - deploys StakerRegistry and PoolRegistry contracts.
 7)  `registerPool.sh` - registers a pool and does a self-bond.
+8)  `delegate.sh` -  delegates stake to a pool.
 
 How to use bootstrap.sh
 ---
