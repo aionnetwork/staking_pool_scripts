@@ -3,7 +3,7 @@
 STAKER_ADDRESS="0xa02df9004be3c4a20aeb50c459212412b1d0a58da3e1ac70ba74dde6b4accf4b"
 PRIVATE_KEY="0xcc76648ce8798bc18130bc9d637995e5c42a922ebeab78795fac58081b9cf9d4"
 EXPECTED_DAPP_ADDRESS="0xa056337bb14e818f3f53e13ab0d93b6539aa570cba91ce65c716058241989be9"
-JAR_PATH="registry.jar"
+JAR_PATH="stakerRegistry.jar"
 TOOLS_JAR=Tools.jar
 
 function require_success()

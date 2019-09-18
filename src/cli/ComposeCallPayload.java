@@ -9,15 +9,38 @@ import net.i2p.crypto.eddsa.Utils;
 
 
 /**
- * Creates an ABI-encoded call payload when given a method name and 0 or more Addresses as hex strings.
+ * Creates an ABI-encoded call payload when given a method name and 0 or more parameters.
  */
 public class ComposeCallPayload {
     public static void main(String[] args) {
         if (0 == args.length) {
-            System.err.println("Usage: cli.ComposeCallPayload METHOD_NAME [ ADDRESS_PARAMETER]*");
+            System.err.println("Usage: cli.ComposeCallPayload METHOD_NAME [PARAMETER]*");
             System.exit(1);
         }
-        
+
+        byte[] rawCallData = null;
+        String methodName = args[0];
+        switch (methodName) {
+            case "registerPool":
+                rawCallData = getRegisterPoolPayload(args);
+                break;
+            case "delegate":
+            case "bond":
+            case "isActive":
+            case "getTotalStake":
+            case "registerStaker":
+            case "getStake":
+            case "getEffectiveStake":
+                rawCallData = getPayloadAddressParameter(args);
+                break;
+            default:
+                System.err.println("Method " + methodName + " is not defined.");
+                System.exit(1);
+        }
+        System.out.println("0x" + Utils.bytesToHex(rawCallData));
+    }
+
+    private static byte[] getPayloadAddressParameter(String[] args) {
         String methodName = args[0];
         ABIStreamingEncoder encoder = new ABIStreamingEncoder();
         encoder.encodeOneString(methodName);
@@ -25,8 +48,17 @@ public class ComposeCallPayload {
             Address address = readAsAddress(args[i]);
             encoder.encodeOneAddress(address);
         }
-        byte[] rawCallData = encoder.toBytes();
-        System.out.println("0x" + Utils.bytesToHex(rawCallData));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getRegisterPoolPayload(String[] args) {
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneString(args[0]);
+        encoder.encodeOneAddress(readAsAddress(args[1]));
+        encoder.encodeOneInteger(Integer.valueOf(args[2]));
+        encoder.encodeOneByteArray(args[3].getBytes());
+        encoder.encodeOneByteArray(Utils.hexToBytes(args[4]));
+        return encoder.toBytes();
     }
 
     private static Address readAsAddress(String arg) {
