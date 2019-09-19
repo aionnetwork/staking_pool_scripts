@@ -33,6 +33,9 @@ public class ComposeCallPayload {
             case "getEffectiveStake":
                 rawCallData = getPayloadAddressParameter(args);
                 break;
+            case "undelegate":
+                rawCallData = getUndelegatePayload(args);
+                break;
             default:
                 System.err.println("Method " + methodName + " is not defined.");
                 System.exit(1);
@@ -58,6 +61,15 @@ public class ComposeCallPayload {
         encoder.encodeOneInteger(Integer.valueOf(args[2]));
         encoder.encodeOneByteArray(args[3].getBytes());
         encoder.encodeOneByteArray(Utils.hexToBytes(args[4]));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getUndelegatePayload(String[] args) {
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneString(args[0]);
+        encoder.encodeOneAddress(readAsAddress(args[1]));
+        encoder.encodeOneBigInteger(new BigInteger(args[2]));
+        encoder.encodeOneBigInteger(new BigInteger(args[3]));
         return encoder.toBytes();
     }
 

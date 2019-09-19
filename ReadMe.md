@@ -16,6 +16,7 @@ Description of relevant components:
 6)  `deploy.sh` - deploys StakerRegistry and PoolRegistry contracts.
 7)  `registerPool.sh` - registers a pool and does a self-bond.
 8)  `delegate.sh` -  delegates stake to a pool.
+9)  `undelegate.sh` - undelegates the amount specified from pool.
 
 How to use bootstrap.sh
 ---
