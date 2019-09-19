@@ -40,6 +40,10 @@ public class ComposeCallPayload {
             case "transferDelegation":
                 rawCallData = getTransferDelegationPayload(args);
                 break;
+            case "finalizeUndelegate":
+            case "finalizeTransfer":
+                rawCallData = getFinalizePayload(args);
+                break;
             default:
                 System.err.println("Method " + methodName + " is not defined.");
                 System.exit(1);
@@ -76,6 +80,7 @@ public class ComposeCallPayload {
         encoder.encodeOneBigInteger(new BigInteger(args[3]));
         return encoder.toBytes();
     }
+
     private static byte[] getTransferDelegationPayload(String[] args) {
         ABIStreamingEncoder encoder = new ABIStreamingEncoder();
         encoder.encodeOneString(args[0]);
@@ -83,6 +88,13 @@ public class ComposeCallPayload {
         encoder.encodeOneAddress(readAsAddress(args[2]));
         encoder.encodeOneBigInteger(new BigInteger(args[3]));
         encoder.encodeOneBigInteger(new BigInteger(args[4]));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getFinalizePayload(String[] args) {
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneString(args[0]);
+        encoder.encodeOneLong(Long.valueOf(args[1]));
         return encoder.toBytes();
     }
 

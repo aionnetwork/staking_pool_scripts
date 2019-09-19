@@ -19,6 +19,8 @@ Description of relevant components:
 9)  `undelegate.sh` - undelegates the amount specified from pool.
 10) `transferDelegation.sh` -  transfers stake from one pool to another.
 11) `withdrawRewards.sh` - withdraws the block rewards of a delegator.
+12) `finalizeUndelegate.sh` - finalizes an undelegate Id.
+13) `finalizeTransfer.sh` - finalizes a transfer Id.
 
 How to use bootstrap.sh
 ---
