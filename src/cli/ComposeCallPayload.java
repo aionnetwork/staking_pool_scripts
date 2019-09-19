@@ -68,7 +68,8 @@ public class ComposeCallPayload {
         encoder.encodeOneAddress(readAsAddress(args[1]));
         encoder.encodeOneInteger(Integer.valueOf(args[2]));
         encoder.encodeOneByteArray(args[3].getBytes());
-        encoder.encodeOneByteArray(Utils.hexToBytes(args[4]));
+        String metadataHash = args[4].startsWith("0x")? args[4].substring(2): args[4];
+        encoder.encodeOneByteArray(Utils.hexToBytes(metadataHash));
         return encoder.toBytes();
     }
 
