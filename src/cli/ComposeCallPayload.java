@@ -31,6 +31,7 @@ public class ComposeCallPayload {
             case "registerStaker":
             case "getStake":
             case "getEffectiveStake":
+            case "withdraw":
                 rawCallData = getPayloadAddressParameter(args);
                 break;
             case "undelegate":
