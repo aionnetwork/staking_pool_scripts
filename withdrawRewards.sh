@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # This script can be used to withdraw rewards.
 #
-# Usage: ./withdrawRewards.sh node_address delegator_private_key delegator_address pool_identity_address
+# Usage: ./withdrawRewards.sh node_address delegator_private_key pool_identity_address
 # -----------------------------------------------------------------------------
 
 POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
@@ -53,16 +53,17 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
-if [ $# -ne 4 ]
+if [ $# -ne 3 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./withdrawRewards.sh node_address delegator_private_key delegator_address pool_identity_address"
+    echo "Usage: ./withdrawRewards.sh node_address delegator_private_key pool_identity_address"
     exit 1
 fi
 node_address="$1"
 private_key="$2"
-delegator_address="$3"
-pool_identity_address="$4"
+pool_identity_address="$3"
+
+delegator_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
 
 get_nonce "$delegator_address"
 nonce="$return"

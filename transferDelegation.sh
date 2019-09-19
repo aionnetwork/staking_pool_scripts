@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # This script can be used to transfer stake from one pool to another pool.
 #
-# Usage: ./transferDelegation.sh node_address delegator_private_key delegator_address from_pool_identity_address to_pool_identity_address amount fee
+# Usage: ./transferDelegation.sh node_address delegator_private_key from_pool_identity_address to_pool_identity_address amount fee
 # -----------------------------------------------------------------------------
 
 POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
@@ -73,19 +73,20 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
-if [ $# -ne 7 ]
+if [ $# -ne 6 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./transferDelegation.sh node_address(ip:port) delegator_private_key delegator_address from_pool_identity_address to_pool_identity_address amount fee"
+    echo "Usage: ./transferDelegation.sh node_address(ip:port) delegator_private_key from_pool_identity_address to_pool_identity_address amount fee"
     exit 1
 fi
 node_address="$1"
 private_key="$2"
-delegator_address="$3"
-from_pool_address="$4"
-to_pool_address="$5"
-amount="$6"
-fee="$7"
+from_pool_address="$3"
+to_pool_address="$4"
+amount="$5"
+fee="$6"
+
+delegator_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
 
 get_nonce "$delegator_address"
 nonce="$return"

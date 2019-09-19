@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 # This script can be used to delegate to a pool.
 #
-# Usage: ./finalizeUndelegate.sh node_address caller_private_key caller_address undelegate_Id
+# Usage: ./finalizeUndelegate.sh node_address caller_private_key undelegate_Id
 # -----------------------------------------------------------------------------
 
 POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
@@ -45,16 +45,17 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
-if [ $# -ne 4 ]
+if [ $# -ne 3 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./finalizeUndelegate.sh node_address caller_private_key caller_address undelegate_Id"
+    echo "Usage: ./finalizeUndelegate.sh node_address caller_private_key undelegate_Id"
     exit 1
 fi
 node_address="$1"
 private_key="$2"
-caller_address="$3"
-undelegate_Id="$4"
+undelegate_Id="$3"
+
+caller_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
 
 get_nonce "$caller_address"
 nonce="$return"

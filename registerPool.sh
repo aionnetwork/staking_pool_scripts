@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # This script can be used to register a pool and do self bond.
 #
-# Usage: ./registerPool.sh node_address private_key identity_address signing_address commission_rate metadata_url metadata_content_hash
+# Usage: ./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash
 # -----------------------------------------------------------------------------
 
 POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
@@ -60,19 +60,20 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
-if [ $# -ne 7 ]
+if [ $# -ne 6 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./registerPool.sh node_address(ip:port) private_key identity_address signing_address commission_rate metadata_url metadata_content_hash"
+    echo "Usage: ./registerPool.sh node_address(ip:port) private_key signing_address commission_rate metadata_url metadata_content_hash"
     exit 1
 fi
 node_address="$1"
 private_key="$2"
-identity_address="$3"
-signing_address="$4"
-commission="$5"
-metadata_url="$6"
-metadata_content_hash="$7"
+signing_address="$3"
+commission="$4"
+metadata_url="$5"
+metadata_content_hash="$6"
+
+identity_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
 
 echo "Identity address = $identity_address"
 echo "Signing address = $signing_address"
