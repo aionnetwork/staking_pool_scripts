@@ -17,6 +17,7 @@ Description of relevant components:
 7)  `registerPool.sh` - registers a pool and does a self-bond.
 8)  `delegate.sh` -  delegates stake to a pool.
 9)  `undelegate.sh` - undelegates the amount specified from pool.
+10) `transferDelegation.sh` -  transfers stake from one pool to another.
 
 How to use bootstrap.sh
 ---

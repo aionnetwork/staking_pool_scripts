@@ -36,6 +36,9 @@ public class ComposeCallPayload {
             case "undelegate":
                 rawCallData = getUndelegatePayload(args);
                 break;
+            case "transferDelegation":
+                rawCallData = getTransferDelegationPayload(args);
+                break;
             default:
                 System.err.println("Method " + methodName + " is not defined.");
                 System.exit(1);
@@ -70,6 +73,15 @@ public class ComposeCallPayload {
         encoder.encodeOneAddress(readAsAddress(args[1]));
         encoder.encodeOneBigInteger(new BigInteger(args[2]));
         encoder.encodeOneBigInteger(new BigInteger(args[3]));
+        return encoder.toBytes();
+    }
+    private static byte[] getTransferDelegationPayload(String[] args) {
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneString(args[0]);
+        encoder.encodeOneAddress(readAsAddress(args[1]));
+        encoder.encodeOneAddress(readAsAddress(args[2]));
+        encoder.encodeOneBigInteger(new BigInteger(args[3]));
+        encoder.encodeOneBigInteger(new BigInteger(args[4]));
         return encoder.toBytes();
     }
 
