@@ -33,7 +33,7 @@ This script registers a pool and does a self bond to put the pool in an active s
 ```./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash```
 
 `node_address` node address in ip:port format.<br />
-`private_key` private key of the pool identity address (32 bytes).<br />
+`private_key` private key of the pool identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `signing_address` signing address of the pool.<br />
 `commission_rate` the pool commission rate with 4 decimal places of granularity (between [0, 1000000]).<br />
 `metadata_url` url hosting the metadata json file.<br />
@@ -48,7 +48,7 @@ This script delegates stake to a pool.
 ```./delegate.sh node_address delegator_private_key pool_identity_address amount```
 
 `node_address` node address in ip:port format.<br />
-`delegator_private_key` private key of the delegator (32 bytes).<br />
+`delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `pool_identity_address` pool identity address.<br />
 `amount` delegation amount in nAmps.<br />
 
@@ -63,7 +63,7 @@ This script undelegates stake from a pool.
 ```./undelegate.sh node_address delegator_private_key pool_identity_address amount fee```
 
 `node_address` node address in ip:port format.<br />
-`delegator_private_key` private key of the delegator (32 bytes).<br />
+`delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `pool_identity_address` pool identity address.<br />
 `amount` undelegation amount in nAmps.<br />
 `fee` the amount of stake that will be transferred to the account that invokes finalizeUndelegate. <br />
@@ -79,7 +79,7 @@ This script can be used to transfer stake from one pool to another pool.
 ```./transferDelegation.sh node_address delegator_private_key from_pool_identity_address to_pool_identity_address amount fee```
 
 `node_address` node address in ip:port format.<br />
-`delegator_private_key` private key of the delegator (32 bytes).<br />
+`delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `from_pool_identity_address` the pool address where the stake is removed from.<br />
 `to_pool_identity_address` the pool address where the stake is transferred to.<br />
 `amount` transfer amount in nAmps.<br />
@@ -96,7 +96,7 @@ This script can be used to withdraw block rewards.
 ```./withdrawRewards.sh node_address delegator_private_key pool_identity_address```
 
 `node_address` node address in ip:port format.<br />
-`delegator_private_key` private key of the delegator (32 bytes).<br />
+`delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `pool_identity_address` pool identity address.<br />
 
 It outputs the total amount of rewards withdrawn (in nAmps).
@@ -110,7 +110,7 @@ This script can be used to finalize an undelegation.
 ```./finalizeUndelegate.sh node_address caller_private_key undelegate_Id```
 
 `node_address` node address in ip:port format.<br />
-`caller_private_key` private key of the account making the transaction (32 bytes).<br />
+`caller_private_key` private key of the account making the transaction. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `undelegate_Id` Id to finalize.<br />
 
 ### finalizeUndelegate.sh
@@ -122,7 +122,7 @@ This script can be used to finalize a transfer.
 ```./finalizeTransfer.sh node_address caller_private_key transfer_Id```
 
 `node_address` node address in ip:port format.<br />
-`caller_private_key` private key of the account making the transaction (32 bytes).<br />
+`caller_private_key` private key of the account making the transaction. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `transfer_Id` Id to finalize.<br />
 
 ### bootstrap.sh

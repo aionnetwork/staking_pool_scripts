@@ -73,6 +73,12 @@ commission="$4"
 metadata_url="$5"
 metadata_content_hash="$6"
 
+if [ ${#private_key} == 130 ]
+then
+    private_key=${private_key::-64}
+    echo "$private_key"
+fi
+
 identity_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
 
 echo "Identity address = $identity_address"

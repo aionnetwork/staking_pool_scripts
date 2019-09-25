@@ -69,6 +69,12 @@ private_key="$2"
 pool_identity_address="$3"
 amount="$4"
 
+if [ ${#private_key} == 130 ]
+then
+    private_key=${private_key::-64}
+    echo "$private_key"
+fi
+
 delegator_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
 
 get_nonce "$delegator_address"
