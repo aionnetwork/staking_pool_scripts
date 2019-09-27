@@ -1,6 +1,7 @@
 package cli;
 
 import java.math.BigInteger;
+import java.util.Base64;
 
 import org.aion.avm.userlib.abi.ABIStreamingEncoder;
 
@@ -43,6 +44,12 @@ public class ComposeCallPayload {
             case "finalizeUndelegate":
             case "finalizeTransfer":
                 rawCallData = getFinalizePayload(args);
+                break;
+            case "deployStakerRegistry":
+                rawCallData = getStakerRegistryDeploymentArgument(args);
+                break;
+            case "deployPoolRegistry":
+                rawCallData = getPoolRegistryDeploymentArgument(args);
                 break;
             default:
                 System.err.println("Method " + methodName + " is not defined.");
@@ -96,6 +103,25 @@ public class ComposeCallPayload {
         ABIStreamingEncoder encoder = new ABIStreamingEncoder();
         encoder.encodeOneString(args[0]);
         encoder.encodeOneLong(Long.valueOf(args[1]));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getStakerRegistryDeploymentArgument(String[] args){
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneBigInteger(new BigInteger(args[1]));
+        encoder.encodeOneLong(Long.valueOf(args[2]));
+        encoder.encodeOneLong(Long.valueOf(args[3]));
+        encoder.encodeOneLong(Long.valueOf(args[4]));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getPoolRegistryDeploymentArgument(String[] args){
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneAddress(readAsAddress(args[1]));
+        encoder.encodeOneBigInteger(new BigInteger(args[2]));
+        encoder.encodeOneBigInteger(new BigInteger(args[3]));
+        encoder.encodeOneLong(Long.valueOf(args[4]));
+        encoder.encodeOneByteArray(Utils.hexToBytes(args[5]));
         return encoder.toBytes();
     }
 

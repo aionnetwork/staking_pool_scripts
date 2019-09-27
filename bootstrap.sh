@@ -48,9 +48,13 @@ function wait_for_receipt()
 	done
 }
 
-
-echo "Deploying the registry.jar..."
-receipt=`./rpc.sh --deploy "$PRIVATE_KEY" "0" "$JAR_PATH"`
+MIN_SELF_STAKE=1000000000000000000000
+SIGNING_ADDRESS_COOLING_PERIOD="$((6 * 60 * 24 * 7))"
+UNDELEGATE_LOCK_UP_PERIOD="$((6 * 60 * 24 * 7))"
+TRANSFER_LOCK_UP_PERIOD="$((6 * 10))"
+echo "Deploying the stakerRegistry.jar..."
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "deployStakerRegistry" "$MIN_SELF_STAKE" "$SIGNING_ADDRESS_COOLING_PERIOD" "$UNDELEGATE_LOCK_UP_PERIOD" "$TRANSFER_LOCK_UP_PERIOD")"
+receipt=`./rpc.sh --deploy "$PRIVATE_KEY" "0" "$JAR_PATH" "$callPayload"`
 require_success $?
 
 echo "Deployment returned receipt: \"$receipt\".  Waiting for deployment to complete..."
@@ -70,20 +74,9 @@ then
 fi
 
 echo "Sending registration call..."
-# registerStaker(Address identityAddress, Address managementAddress, Address signingAddress, Address coinbaseAddress)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerStaker" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS")"
-receipt=`./rpc.sh --call "$PRIVATE_KEY" "1" "$address" "$callPayload" "0"`
-echo "$receipt"
-require_success $?
-
-echo "Transaction returned receipt: \"$receipt\".  Waiting for transaction to complete..."
-wait_for_receipt "$receipt"
-echo "Transaction completed"
-
-echo "Sending bond call"
-# bond(Address staker)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "bond" "$STAKER_ADDRESS")"
-receipt=`./rpc.sh --call "$PRIVATE_KEY" "2" "$address" "$callPayload" "100000000000000000000000"`
+# registerStaker(Address identityAddress, Address signingAddress, Address coinbaseAddress)
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerStaker" "$STAKER_ADDRESS" "$STAKER_ADDRESS" "$STAKER_ADDRESS")"
+receipt=`./rpc.sh --call "$PRIVATE_KEY" "1" "$address" "$callPayload" "100000000000000000000000"`
 echo "$receipt"
 require_success $?
 

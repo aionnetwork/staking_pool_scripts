@@ -94,18 +94,6 @@ echo "Using nonce $NONCE"
 echo "Sending registration call..."
 # registerStaker(Address signingAddress, int commissionRate, byte[] metaDataUrl, byte[] metaDataContentHash)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerPool" "$signing_address" "$commission" "$metadata_url" "$metadata_content_hash")"
-receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "0"`
-require_success $?
-
-echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."
-wait_for_receipt "$receipt"
-echo "Transaction completed"
-
-echo "Sending delegate call with 1000 Aions..."
-NONCE=$((NONCE + 1))
-
-# delegate(Address pool)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "delegate" "$identity_address")"
 receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "1000000000000000000000"`
 require_success $?
 

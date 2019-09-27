@@ -27,7 +27,8 @@ How to use scripts
 ---
 ### registerPool.sh
 
-This script registers a pool and does a self bond to put the pool in an active state.
+This script registers a new pool in PoolRegistry. Registration is done by passing the minimum self bond value in the transaction. 
+Pool will be in an active state after registration is complete.
 
 **Usage:**
 
@@ -146,5 +147,4 @@ In order to run this
 
 1)  Deploys the StakingRegistry contract as the premined account.
 2)  Registers the premined account as a staker.
-3)  Votes 1 billion Wei (whatever we call the base unit on Aion) for the premined account, from the premined account.
-4)  Verifies that there is indeed 1 billion voted for the premined account.
+3)  Verifies that there is indeed 1 billion voted for the premined account.
