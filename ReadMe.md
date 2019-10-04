@@ -21,6 +21,7 @@ Description of relevant components:
 11) `withdrawRewards.sh` - withdraws the block rewards of a delegator.
 12) `finalizeUndelegate.sh` - finalizes an undelegate Id.
 13) `finalizeTransfer.sh` - finalizes a transfer Id.
+14) `hashFile.sh` - prints the blake-2b hash of the input file.
 
 How to use scripts
 ---
@@ -124,6 +125,14 @@ This script can be used to finalize a transfer.
 `node_address` node address in ip:port format.<br />
 `caller_private_key` private key of the account making the transaction. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `transfer_Id` Id to finalize.<br />
+
+### hashFile.sh
+
+This script prints the blake-2b hash of the input file and can be used to generate the hash of the meta-data json file.
+
+**Usage:**
+
+```./registerPool.sh path_to_file```
 
 ### bootstrap.sh
 
