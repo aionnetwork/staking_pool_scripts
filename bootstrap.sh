@@ -50,7 +50,7 @@ function wait_for_receipt()
 
 MIN_SELF_STAKE=1000000000000000000000
 SIGNING_ADDRESS_COOLING_PERIOD="$((6 * 60 * 24 * 7))"
-UNDELEGATE_LOCK_UP_PERIOD="$((6 * 60 * 24 * 7))"
+UNDELEGATE_LOCK_UP_PERIOD="$((6 * 60 * 24))"
 TRANSFER_LOCK_UP_PERIOD="$((6 * 10))"
 echo "Deploying the stakerRegistry.jar..."
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "deployStakerRegistry" "$MIN_SELF_STAKE" "$SIGNING_ADDRESS_COOLING_PERIOD" "$UNDELEGATE_LOCK_UP_PERIOD" "$TRANSFER_LOCK_UP_PERIOD")"

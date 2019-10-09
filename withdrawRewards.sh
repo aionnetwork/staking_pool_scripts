@@ -78,7 +78,7 @@ echo "Using nonce $nonce"
 echo "Withdrawing rewards..."
 
 # withdraw(Address pool)
-callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "withdraw" "$pool_identity_address")"
+callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "withdrawRewards" "$pool_identity_address")"
 receipt=`./rpc.sh --call "$private_key" "$nonce" "$POOL_REGISTRY_ADDRESS" "$callPayload" "0"`
 require_success $?
 
