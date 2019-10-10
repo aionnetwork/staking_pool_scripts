@@ -60,6 +60,19 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
+function get_coinbase(){
+    address="$1"
+    callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getCoinbaseAddress" "$address")"
+    data={"jsonrpc":"2.0","method":"eth_call","params":[{"to":"$STAKER_REGISTRY_ADDRESS","data":"$callPayload"}],"id":1}
+    response=`curl -s -X POST -H "Content-Type: application/json" --data "$data" "$node_address"`
+    if [[ "$response" =~ (\"result\":\"0x[0-9a-f]{66}) ]];
+    then
+        echo "Coinbase address = "${BASH_REMATCH[0]:14:68}""
+    else
+        echo "Could not retrieve the coinbase address."
+    fi
+}
+
 if [ $# -ne 6 ]
 then
     echo "Invalid number of parameters."
@@ -111,6 +124,9 @@ echo "Current stake = 1000 Aions"
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "isActive" "$identity_address")"
 # This result in boolean:  0x02 (byte), value
 verify_state "$STAKER_REGISTRY_ADDRESS" "$callPayload" '{"result":"0x0201","id":1,"jsonrpc":"2.0"}'
+
+get_coinbase "$identity_address"
+
 echo "$identity_address is now active."
 
 echo "Registration complete."
