@@ -39,7 +39,7 @@ function wait_for_receipt()
 
 function get_nonce(){
         address="$1"
-        payload={"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["$address","latest"],"id":1}
+        payload={\"jsonrpc\":\"2.0\",\"method\":\"eth_getTransactionCount\",\"params\":[\"$address\",\"latest\"],\"id\":1}
         response=`curl -s -X POST -H "Content-Type: application/json" --data "$payload" "$node_address"`
         nonce_hex="$(echo "$response" | egrep -oh 'result":"0x'"[[:xdigit:]]+" | egrep -oh "0x[[:xdigit:]]+")"
         return=$(( 16#${nonce_hex:2} ))

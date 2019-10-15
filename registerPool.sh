@@ -25,9 +25,9 @@ function verify_state()
 	data="$2"
 	expected="$3"
 
-	payload={"jsonrpc":"2.0","method":"eth_call","params":[{"to":"$address","data":"$data"}],"id":1}
+	payload={\"jsonrpc\":\"2.0\",\"method\":\"eth_call\",\"params\":[{\"to\":\"$address\",\"data\":\"$data\"}],\"id\":1}
 	response=`curl -s -X POST -H "Content-Type: application/json" --data "$payload" "$node_address"`
-	if [ "$expected" != "$response" ]
+	if [[ ! $response =~ $expected ]]
 	then
 		echo "Incorrect response from eth_call: \"$response\""
 		exit 1
@@ -54,7 +54,7 @@ function wait_for_receipt()
 
 function get_nonce(){
         address="$1"
-        payload={"jsonrpc":"2.0","method":"eth_getTransactionCount","params":["$address","latest"],"id":1}
+        payload={\"jsonrpc\":\"2.0\",\"method\":\"eth_getTransactionCount\",\"params\":[\"$address\",\"latest\"],\"id\":1}
         response=`curl -s -X POST -H "Content-Type: application/json" --data "$payload" "$node_address"`
         nonce_hex="$(echo "$response" | egrep -oh 'result":"0x'"[[:xdigit:]]+" | egrep -oh "0x[[:xdigit:]]+")"
         return=$(( 16#${nonce_hex:2} ))
@@ -63,7 +63,7 @@ function get_nonce(){
 function get_coinbase(){
     address="$1"
     callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getCoinbaseAddress" "$address")"
-    data={"jsonrpc":"2.0","method":"eth_call","params":[{"to":"$STAKER_REGISTRY_ADDRESS","data":"$callPayload"}],"id":1}
+    data={\"jsonrpc\":\"2.0\",\"method\":\"eth_call\",\"params\":[{\"to\":\"$STAKER_REGISTRY_ADDRESS\",\"data\":\"$callPayload\"}],\"id\":1}
     response=`curl -s -X POST -H "Content-Type: application/json" --data "$data" "$node_address"`
     if [[ "$response" =~ (\"result\":\"0x[0-9a-f]{66}) ]];
     then
@@ -118,12 +118,12 @@ echo "Verifying that pool was registered and is active..."
 # getStake(Address pool, Address staker)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getStake" "$identity_address" "$identity_address")"
 # This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
-verify_state "$POOL_REGISTRY_ADDRESS" "$callPayload" '{"result":"0x23093635c9adc5dea00000","id":1,"jsonrpc":"2.0"}'
+verify_state "$POOL_REGISTRY_ADDRESS" "$callPayload" "0x23093635c9adc5dea00000"
 echo "Current stake = 1000 Aions"
 
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "isActive" "$identity_address")"
 # This result in boolean:  0x02 (byte), value
-verify_state "$STAKER_REGISTRY_ADDRESS" "$callPayload" '{"result":"0x0201","id":1,"jsonrpc":"2.0"}'
+verify_state "$STAKER_REGISTRY_ADDRESS" "$callPayload" "0x0201"
 
 get_coinbase "$identity_address"
 
