@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # This script can be used to register a pool and do self bond.
 #
-# Usage: ./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash
+# Usage: ./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash value
 # -----------------------------------------------------------------------------
 
 POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
@@ -73,10 +73,10 @@ function get_coinbase(){
     fi
 }
 
-if [ $# -ne 6 ]
+if [ $# -ne 7 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./registerPool.sh node_address(ip:port) private_key signing_address commission_rate metadata_url metadata_content_hash"
+    echo "Usage: ./registerPool.sh node_address(ip:port) private_key signing_address commission_rate metadata_url metadata_content_hash value"
     exit 1
 fi
 node_address="$1"
@@ -85,6 +85,7 @@ signing_address="$3"
 commission="$4"
 metadata_url="$5"
 metadata_content_hash="$6"
+amount="$7"
 
 if [ ${#private_key} == 130 ]
 then
@@ -107,7 +108,7 @@ echo "Using nonce $NONCE"
 echo "Sending registration call..."
 # registerStaker(Address signingAddress, int commissionRate, byte[] metaDataUrl, byte[] metaDataContentHash)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerPool" "$signing_address" "$commission" "$metadata_url" "$metadata_content_hash")"
-receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "1000000000000000000000"`
+receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount"`
 require_success $?
 
 echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."
@@ -117,8 +118,9 @@ echo "Transaction completed"
 echo "Verifying that pool was registered and is active..."
 # getStake(Address pool, Address staker)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getStake" "$identity_address" "$identity_address")"
+amount_hex="$(java -cp $TOOLS_JAR cli.EncodeType "BigInteger" "$amount")"
 # This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
-verify_state "$POOL_REGISTRY_ADDRESS" "$callPayload" "0x23093635c9adc5dea00000"
+verify_state "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount_hex"
 echo "Current stake = 1000 Aions"
 
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "isActive" "$identity_address")"

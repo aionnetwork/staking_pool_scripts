@@ -32,7 +32,7 @@ Pool will be in an active state after registration is complete.
 
 **Usage:**
 
-```./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash```
+```./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash value```
 
 `node_address` node address in ip:port format.<br />
 `private_key` private key of the pool identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
@@ -40,6 +40,7 @@ Pool will be in an active state after registration is complete.
 `commission_rate` the pool commission rate with 4 decimal places of granularity (between [0, 1000000]).<br />
 `metadata_url` url hosting the metadata json file.<br />
 `metadata_content_hash` Blake2b hash of the json object hosted at the metadata url.<br />
+`value` value in nAmps to pass along the transaction. This will be counted towards the self-bond value and has to be at least 1000 Aions (1000000000000000000000 nAmps).<br />
 
 ### delegate.sh
 
