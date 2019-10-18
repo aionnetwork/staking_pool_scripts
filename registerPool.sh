@@ -42,7 +42,7 @@ function wait_for_receipt()
 	do
 		echo " waiting..."
 		sleep 1
-		`./rpc.sh --check-receipt-status "$receipt"`
+		`./rpc.sh --check-receipt-status "$receipt" "$node_address"`
 		result=$?
 		if [ "2" == "$result" ]
 		then
@@ -108,7 +108,7 @@ echo "Using nonce $NONCE"
 echo "Sending registration call..."
 # registerStaker(Address signingAddress, int commissionRate, byte[] metaDataUrl, byte[] metaDataContentHash)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerPool" "$signing_address" "$commission" "$metadata_url" "$metadata_content_hash")"
-receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount"`
+receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount" "$node_address"`
 require_success $?
 
 echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."

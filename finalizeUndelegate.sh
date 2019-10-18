@@ -27,7 +27,7 @@ function wait_for_receipt()
 	do
 		echo " waiting..."
 		sleep 1
-		`./rpc.sh --check-receipt-status "$receipt"`
+		`./rpc.sh --check-receipt-status "$receipt" "$node_address"`
 		result=$?
 		if [ "2" == "$result" ]
 		then
@@ -71,7 +71,7 @@ echo "Finalizing undelegate Id $undelegate_Id..."
 
 # finalizeUndelegate(long id)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "finalizeUndelegate" "$undelegate_Id")"
-receipt=`./rpc.sh --call "$private_key" "$nonce" "$POOL_REGISTRY_ADDRESS" "$callPayload" "0"`
+receipt=`./rpc.sh --call "$private_key" "$nonce" "$POOL_REGISTRY_ADDRESS" "$callPayload" "0" "$node_address"`
 require_success $?
 
 echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."
