@@ -90,7 +90,6 @@ amount="$7"
 if [ ${#private_key} == 130 ]
 then
     private_key=${private_key::-64}
-    echo "$private_key"
 fi
 
 identity_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
@@ -121,7 +120,7 @@ callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getStake" "$identity_
 amount_hex="$(java -cp $TOOLS_JAR cli.EncodeType "BigInteger" "$amount")"
 # This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
 verify_state "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount_hex"
-echo "Current stake = 1000 Aions"
+echo "Current stake = $amount nAmps"
 
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "isActive" "$identity_address")"
 # This result in boolean:  0x02 (byte), value

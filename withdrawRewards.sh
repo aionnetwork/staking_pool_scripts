@@ -66,7 +66,6 @@ pool_identity_address="$3"
 if [ ${#private_key} == 130 ]
 then
     private_key=${private_key::-64}
-    echo "$private_key"
 fi
 
 delegator_address="$(java -cp $TOOLS_JAR cli.KeyExtractor "$private_key")"
