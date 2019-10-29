@@ -22,6 +22,9 @@ Description of relevant components:
 12) `finalizeUndelegate.sh` - finalizes an undelegate Id.
 13) `finalizeTransfer.sh` - finalizes a transfer Id.
 14) `hashFile.sh` - prints the blake-2b hash of the input file.
+15) `updateMetaData.sh` - updates the metadata of the pool.
+16) `requestCommissionRateChange.sh` - requests commission rate to be updated. This is an asynchronous task that needs to be finalized.
+17) `finalizeCommissionRateChange.sh` - finalizes an update commission rate request Id.
 
 How to use scripts
 ---
@@ -116,7 +119,7 @@ This script can be used to finalize an undelegation.
 `caller_private_key` private key of the account making the transaction. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `undelegate_Id` Id to finalize.<br />
 
-### finalizeUndelegate.sh
+### finalizeTransfer.sh
 
 This script can be used to finalize a transfer.
 
@@ -135,6 +138,44 @@ This script prints the blake-2b hash of the input file and can be used to genera
 **Usage:**
 
 ```./registerPool.sh path_to_file```
+
+### updateMetaData.sh
+
+This script can be used to update the pool's metadata in the contract.
+
+**Usage:**
+
+```./updateMetaData.sh node_address(ip:port) pool_private_key metadata_url metadata_content_hash```
+
+`node_address` node address in ip:port format.<br />
+`pool_private_key` private key of pool's identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
+`metadata_url` url hosting the metadata json file.<br />
+`metadata_content_hash` Blake2b hash of the json object hosted at the metadata url.<br />
+
+
+### requestCommissionRateChange.sh
+
+This script can be used to request commission rate to be updated.
+
+**Usage:**
+
+```./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate```
+
+`node_address` node address in ip:port format.<br />
+`pool_private_key` private key of pool's identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
+`new_commission_rate` new commission rate.<br />
+
+### finalizeCommissionRateChange.sh
+
+This script can be used to finalize commission rate change.
+
+**Usage:**
+
+```./finalizeCommissionRateChange.sh node_address(ip:port) pool_private_key request_Id```
+
+`node_address` node address in ip:port format.<br />
+`pool_private_key` private key of pool's identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
+`request_Id` Id to finalize.<br />
 
 ### bootstrap.sh
 

@@ -1,7 +1,6 @@
 package cli;
 
 import java.math.BigInteger;
-import java.util.Base64;
 
 import org.aion.avm.userlib.abi.ABIStreamingEncoder;
 
@@ -44,6 +43,7 @@ public class ComposeCallPayload {
                 break;
             case "finalizeUndelegate":
             case "finalizeTransfer":
+            case "finalizeCommissionRateChange":
                 rawCallData = getFinalizePayload(args);
                 break;
             case "deployStakerRegistry":
@@ -51,6 +51,12 @@ public class ComposeCallPayload {
                 break;
             case "deployPoolRegistry":
                 rawCallData = getPoolRegistryDeploymentArgument(args);
+                break;
+            case "requestCommissionRateChange":
+                rawCallData = getRequestCommissionRateChangePayload(args);
+                break;
+            case "updateMetaData":
+                rawCallData = getUpdateMetaDataPayload(args);
                 break;
             default:
                 System.err.println("Method " + methodName + " is not defined.");
@@ -123,6 +129,22 @@ public class ComposeCallPayload {
         encoder.encodeOneBigInteger(new BigInteger(args[3]));
         encoder.encodeOneLong(Long.valueOf(args[4]));
         encoder.encodeOneByteArray(Utils.hexToBytes(args[5]));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getRequestCommissionRateChangePayload(String[] args){
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneString(args[0]);
+        encoder.encodeOneInteger(Integer.valueOf(args[1]));
+        return encoder.toBytes();
+    }
+
+    private static byte[] getUpdateMetaDataPayload(String[] args){
+        ABIStreamingEncoder encoder = new ABIStreamingEncoder();
+        encoder.encodeOneString(args[0]);
+        encoder.encodeOneByteArray(args[1].getBytes());
+        String metadataHash = args[2].startsWith("0x")? args[2].substring(2): args[2];
+        encoder.encodeOneByteArray(Utils.hexToBytes(metadataHash));
         return encoder.toBytes();
     }
 
