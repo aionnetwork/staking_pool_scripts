@@ -3,10 +3,11 @@
 # -----------------------------------------------------------------------------
 # This script can be used to request a commission rate change.
 #
-# Usage: ./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate
+# Usage: ./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate network_name
 # -----------------------------------------------------------------------------
 
-POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
+POOL_REGISTRY_AMITY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
+POOL_REGISTRY_MAINNET_ADDRESS="0xa008e42a76e2e779175c589efdb2a0e742b40d8d421df2b93a8a0b13090c7cc8"
 TOOLS_JAR=Tools.jar
 return=0
 
@@ -60,15 +61,28 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
-if [ $# -ne 3 ]
+if [ $# -ne 4 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate"
+    echo "Usage: ./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate network_name(amity/mainnet)"
     exit 1
 fi
 node_address="$1"
 private_key="$2"
 new_commission_rate="$3"
+network=$( echo "$4" | tr '[A-Z]' '[a-z]' )
+pool_registry_address=
+
+if [[ "$network" = "amity" ]]
+then
+    pool_registry_address=${POOL_REGISTRY_AMITY_ADDRESS}
+elif [[ "$network" = "mainnet" ]]
+then
+    pool_registry_address=${POOL_REGISTRY_MAINNET_ADDRESS}
+else
+    echo "Invalid network name. Only amity and mainnet networks are supported."
+    exit 1
+fi
 
 if [ ${#private_key} == 130 ]
 then
@@ -85,7 +99,7 @@ echo "Requesting commission rate to be updated..."
 
 # requestCommissionRateChange(int newCommissionRate)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "requestCommissionRateChange" "$new_commission_rate")"
-receipt=`./rpc.sh --call "$private_key" "$nonce" "$POOL_REGISTRY_ADDRESS" "$callPayload" "0" "$node_address"`
+receipt=`./rpc.sh --call "$private_key" "$nonce" "$pool_registry_address" "$callPayload" "0" "$node_address"`
 require_success $?
 
 echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."

@@ -35,7 +35,7 @@ Pool will be in an active state after registration is complete.
 
 **Usage:**
 
-```./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash value```
+```./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash value network_name```
 
 `node_address` node address in ip:port format.<br />
 `private_key` private key of the pool identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
@@ -44,6 +44,7 @@ Pool will be in an active state after registration is complete.
 `metadata_url` url hosting the metadata json file.<br />
 `metadata_content_hash` Blake2b hash of the json object hosted at the metadata url.<br />
 `value` value in nAmps to pass along the transaction. This will be counted towards the self-bond value and has to be at least 1000 Aions (1000000000000000000000 nAmps).<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 ### delegate.sh
 
@@ -51,12 +52,13 @@ This script delegates stake to a pool.
 
 **Usage:**
 
-```./delegate.sh node_address delegator_private_key pool_identity_address amount```
+```./delegate.sh node_address delegator_private_key pool_identity_address amount network_name```
 
 `node_address` node address in ip:port format.<br />
 `delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `pool_identity_address` pool identity address.<br />
 `amount` delegation amount in nAmps.<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 It outputs the current stake of the delegator in the pool.
 
@@ -66,13 +68,14 @@ This script undelegates stake from a pool.
 
 **Usage:**
 
-```./undelegate.sh node_address delegator_private_key pool_identity_address amount fee```
+```./undelegate.sh node_address delegator_private_key pool_identity_address amount fee network_name```
 
 `node_address` node address in ip:port format.<br />
 `delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `pool_identity_address` pool identity address.<br />
 `amount` undelegation amount in nAmps.<br />
 `fee` the amount of stake that will be transferred to the account that invokes finalizeUndelegate. <br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 It outputs the current stake of the delegator in the pool, followed by the undelegate Id.
 
@@ -82,7 +85,7 @@ This script can be used to transfer stake from one pool to another pool.
 
 **Usage:**
 
-```./transferDelegation.sh node_address delegator_private_key from_pool_identity_address to_pool_identity_address amount fee```
+```./transferDelegation.sh node_address delegator_private_key from_pool_identity_address to_pool_identity_address amount fee network_name```
 
 `node_address` node address in ip:port format.<br />
 `delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
@@ -90,6 +93,7 @@ This script can be used to transfer stake from one pool to another pool.
 `to_pool_identity_address` the pool address where the stake is transferred to.<br />
 `amount` transfer amount in nAmps.<br />
 `fee` the amount of stake that will be transferred to the account that invokes finalizeTransfer. <br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 It outputs the current stake of the delegator in the from pool, followed by the transfer Id.
 
@@ -99,11 +103,12 @@ This script can be used to withdraw block rewards.
 
 **Usage:**
 
-```./withdrawRewards.sh node_address delegator_private_key pool_identity_address```
+```./withdrawRewards.sh node_address delegator_private_key pool_identity_address network_name```
 
 `node_address` node address in ip:port format.<br />
 `delegator_private_key` private key of the delegator. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `pool_identity_address` pool identity address.<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 It outputs the total amount of rewards withdrawn (in nAmps).
 
@@ -113,11 +118,12 @@ This script can be used to finalize an undelegation.
 
 **Usage:**
 
-```./finalizeUndelegate.sh node_address caller_private_key undelegate_Id```
+```./finalizeUndelegate.sh node_address caller_private_key undelegate_Id network_name```
 
 `node_address` node address in ip:port format.<br />
 `caller_private_key` private key of the account making the transaction. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `undelegate_Id` Id to finalize.<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 ### finalizeTransfer.sh
 
@@ -125,11 +131,12 @@ This script can be used to finalize a transfer.
 
 **Usage:**
 
-```./finalizeTransfer.sh node_address caller_private_key transfer_Id```
+```./finalizeTransfer.sh node_address caller_private_key transfer_Id network_name```
 
 `node_address` node address in ip:port format.<br />
 `caller_private_key` private key of the account making the transaction. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `transfer_Id` Id to finalize.<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 ### hashFile.sh
 
@@ -137,7 +144,7 @@ This script prints the blake-2b hash of the input file and can be used to genera
 
 **Usage:**
 
-```./registerPool.sh path_to_file```
+```./hashFile.sh path_to_file```
 
 ### updateMetaData.sh
 
@@ -145,13 +152,13 @@ This script can be used to update the pool's metadata in the contract.
 
 **Usage:**
 
-```./updateMetaData.sh node_address(ip:port) pool_private_key metadata_url metadata_content_hash```
+```./updateMetaData.sh node_address(ip:port) pool_private_key metadata_url metadata_content_hash network_name```
 
 `node_address` node address in ip:port format.<br />
 `pool_private_key` private key of pool's identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `metadata_url` url hosting the metadata json file.<br />
 `metadata_content_hash` Blake2b hash of the json object hosted at the metadata url.<br />
-
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 ### requestCommissionRateChange.sh
 
@@ -159,11 +166,12 @@ This script can be used to request commission rate to be updated.
 
 **Usage:**
 
-```./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate```
+```./requestCommissionRateChange.sh node_address(ip:port) pool_private_key new_commission_rate network_name```
 
 `node_address` node address in ip:port format.<br />
 `pool_private_key` private key of pool's identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `new_commission_rate` new commission rate.<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 ### finalizeCommissionRateChange.sh
 
@@ -171,11 +179,12 @@ This script can be used to finalize commission rate change.
 
 **Usage:**
 
-```./finalizeCommissionRateChange.sh node_address(ip:port) pool_private_key request_Id```
+```./finalizeCommissionRateChange.sh node_address(ip:port) pool_private_key request_Id network_name```
 
 `node_address` node address in ip:port format.<br />
 `pool_private_key` private key of pool's identity address. Private key should start with `0x`. Both 32 and 64 byte keys are accepted as an input.<br />
 `request_Id` Id to finalize.<br />
+`network_name` name of the network running on the node. Network name is case insensitive. Currently only `amity` and `mainnet` networks are supported.
 
 ### bootstrap.sh
 

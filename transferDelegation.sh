@@ -3,10 +3,11 @@
 # -----------------------------------------------------------------------------
 # This script can be used to transfer stake from one pool to another pool.
 #
-# Usage: ./transferDelegation.sh node_address delegator_private_key from_pool_identity_address to_pool_identity_address amount fee
+# Usage: ./transferDelegation.sh node_address delegator_private_key from_pool_identity_address to_pool_identity_address amount fee network_name
 # -----------------------------------------------------------------------------
 
-POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
+POOL_REGISTRY_AMITY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
+POOL_REGISTRY_MAINNET_ADDRESS="0xa008e42a76e2e779175c589efdb2a0e742b40d8d421df2b93a8a0b13090c7cc8"
 TOOLS_JAR=Tools.jar
 return=0
 
@@ -73,10 +74,10 @@ function get_nonce(){
         return=$(( 16#${nonce_hex:2} ))
 }
 
-if [ $# -ne 6 ]
+if [ $# -ne 7 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./transferDelegation.sh node_address(ip:port) delegator_private_key from_pool_identity_address to_pool_identity_address amount fee"
+    echo "Usage: ./transferDelegation.sh node_address(ip:port) delegator_private_key from_pool_identity_address to_pool_identity_address amount fee network_name(amity/mainnet)"
     exit 1
 fi
 node_address="$1"
@@ -85,6 +86,19 @@ from_pool_address="$3"
 to_pool_address="$4"
 amount="$5"
 fee="$6"
+network=$( echo "$7" | tr '[A-Z]' '[a-z]' )
+pool_registry_address=
+
+if [[ "$network" = "amity" ]]
+then
+    pool_registry_address=${POOL_REGISTRY_AMITY_ADDRESS}
+elif [[ "$network" = "mainnet" ]]
+then
+    pool_registry_address=${POOL_REGISTRY_MAINNET_ADDRESS}
+else
+    echo "Invalid network name. Only amity and mainnet networks are supported."
+    exit 1
+fi
 
 if [ ${#private_key} == 130 ]
 then
@@ -97,11 +111,11 @@ get_nonce "$delegator_address"
 nonce="$return"
 echo "Using nonce $nonce"
 
-echo "Transferring $amount nAmps from $from_pool_address $to_pool_address..."
+echo "Transferring $amount nAmps from $from_pool_address to $to_pool_address..."
 
 # transferDelegation(Address fromPool, Address toPool, BigInteger amount, BigInteger fee)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "transferDelegation" "$from_pool_address" "$to_pool_address" "$amount" "$fee")"
-receipt=`./rpc.sh --call "$private_key" "$nonce" "$POOL_REGISTRY_ADDRESS" "$callPayload" "0" "$node_address"`
+receipt=`./rpc.sh --call "$private_key" "$nonce" "$pool_registry_address" "$callPayload" "0" "$node_address"`
 require_success $?
 
 echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."
@@ -113,5 +127,5 @@ echo "Retrieving the total stake for $delegator_address in from pool..."
 # getStake(Address pool, Address staker)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getStake" "$from_pool_address" "$delegator_address")"
 # This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
-echo_state "$POOL_REGISTRY_ADDRESS" "$callPayload"
+echo_state "$pool_registry_address" "$callPayload"
 echo "Transfer complete."

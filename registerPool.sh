@@ -2,11 +2,15 @@
 # -----------------------------------------------------------------------------
 # This script can be used to register a pool and do self bond.
 #
-# Usage: ./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash value
+# Usage: ./registerPool.sh node_address private_key signing_address commission_rate metadata_url metadata_content_hash value network_name
 # -----------------------------------------------------------------------------
 
-POOL_REGISTRY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
-STAKER_REGISTRY_ADDRESS="0xa056337bb14e818f3f53e13ab0d93b6539aa570cba91ce65c716058241989be9"
+POOL_REGISTRY_AMITY_ADDRESS="0xa01b68fa4f947ea4829bebdac148d1f7f8a0be9a8fd5ce33e1696932bef05356"
+POOL_REGISTRY_MAINNET_ADDRESS="0xa008e42a76e2e779175c589efdb2a0e742b40d8d421df2b93a8a0b13090c7cc8"
+
+STAKER_REGISTRY_AMITY_ADDRESS="0xa056337bb14e818f3f53e13ab0d93b6539aa570cba91ce65c716058241989be9"
+STAKER_REGISTRY_MAINNET_ADDRESS="0xa0733306c2ee0c60224b0e59efeae8eee558c0ca1b39e7e5a14a575124549416"
+
 TOOLS_JAR=Tools.jar
 return=0
 
@@ -63,7 +67,7 @@ function get_nonce(){
 function get_coinbase(){
     address="$1"
     callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getCoinbaseAddress" "$address")"
-    data={\"jsonrpc\":\"2.0\",\"method\":\"eth_call\",\"params\":[{\"to\":\"$STAKER_REGISTRY_ADDRESS\",\"data\":\"$callPayload\"}],\"id\":1}
+    data={\"jsonrpc\":\"2.0\",\"method\":\"eth_call\",\"params\":[{\"to\":\"$staker_registry_address\",\"data\":\"$callPayload\"}],\"id\":1}
     response=`curl -s -X POST -H "Content-Type: application/json" --data "$data" "$node_address"`
     if [[ "$response" =~ (\"result\":\"0x[0-9a-f]{66}) ]];
     then
@@ -73,10 +77,10 @@ function get_coinbase(){
     fi
 }
 
-if [ $# -ne 7 ]
+if [ $# -ne 8 ]
 then
     echo "Invalid number of parameters."
-    echo "Usage: ./registerPool.sh node_address(ip:port) private_key signing_address commission_rate metadata_url metadata_content_hash value"
+    echo "Usage: ./registerPool.sh node_address(ip:port) private_key signing_address commission_rate metadata_url metadata_content_hash value network_name(amity/mainnet)"
     exit 1
 fi
 node_address="$1"
@@ -86,6 +90,22 @@ commission="$4"
 metadata_url="$5"
 metadata_content_hash="$6"
 amount="$7"
+network=$( echo "$8" | tr '[A-Z]' '[a-z]' )
+pool_registry_address=
+staker_registry_address=
+
+if [[ "$network" = "amity" ]]
+then
+    pool_registry_address=${POOL_REGISTRY_AMITY_ADDRESS}
+    staker_registry_address=${STAKER_REGISTRY_AMITY_ADDRESS}
+elif [[ "$network" = "mainnet" ]]
+then
+    pool_registry_address=${POOL_REGISTRY_MAINNET_ADDRESS}
+    staker_registry_address=${STAKER_REGISTRY_MAINNET_ADDRESS}
+else
+    echo "Invalid network name. Only amity and mainnet networks are supported."
+    exit 1
+fi
 
 if [ ${#private_key} == 130 ]
 then
@@ -107,7 +127,7 @@ echo "Using nonce $NONCE"
 echo "Sending registration call..."
 # registerStaker(Address signingAddress, int commissionRate, byte[] metaDataUrl, byte[] metaDataContentHash)
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "registerPool" "$signing_address" "$commission" "$metadata_url" "$metadata_content_hash")"
-receipt=`./rpc.sh --call "$private_key" "$NONCE" "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount" "$node_address"`
+receipt=`./rpc.sh --call "$private_key" "$NONCE" "$pool_registry_address" "$callPayload" "$amount" "$node_address"`
 require_success $?
 
 echo "Transaction hash: \"$receipt\".  Waiting for transaction to complete..."
@@ -119,12 +139,12 @@ echo "Verifying that pool was registered and is active..."
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "getStake" "$identity_address" "$identity_address")"
 amount_hex="$(java -cp $TOOLS_JAR cli.EncodeType "BigInteger" "$amount")"
 # This result in a BigInteger:  0x23 (byte), length (byte), value (big-endian length bytes)
-verify_state "$POOL_REGISTRY_ADDRESS" "$callPayload" "$amount_hex"
+verify_state "$pool_registry_address" "$callPayload" "$amount_hex"
 echo "Current stake = $amount nAmps"
 
 callPayload="$(java -cp $TOOLS_JAR cli.ComposeCallPayload "isActive" "$identity_address")"
 # This result in boolean:  0x02 (byte), value
-verify_state "$STAKER_REGISTRY_ADDRESS" "$callPayload" "0x0201"
+verify_state "$staker_registry_address" "$callPayload" "0x0201"
 
 get_coinbase "$identity_address"
 
